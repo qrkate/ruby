@@ -5,67 +5,50 @@ class Station
 
    def initialize(name)
      @name = name
-     @trains = {:cargo => [], :passanger => []}
+     @trains = []
    end
 
    def add_train(train)
-     if train.type == "Cargo"
-       self.trains[:cargo] << train.number
-     else
-       self.trains[:passanger] << train.number
-     end
+     @trains << train
      puts "Поезд №#{train.number} прибыл на станцию #{name}."
    end
 
-   def show_train
-     self.trains.each do |type, number|
-       number.each {|x| puts "Поезд № #{x}" }
-     end
-   end
-
    def show_train_type
-     puts "Грузовые поезда:"
-     self.trains[:cargo].each { |number| puts "Поезд № #{number}" }
-     puts "Всего: #{@trains[:cargo].size}"
-     puts "Пассажирские поезда:"
-     self.trains[:passanger].each { |number| puts "Поезд № #{number}" }
-     puts "Всего: #{@trains[:passanger].size}"
+     self.trains.each do |train|
+       if train.type == "Cargo"
+         puts "Грузовой поезд № #{train.number}"
+       else
+        puts "Пассажирский поезд № #{train.number}"
+       end
+     end
    end
 
    def departure(train)
-     if train.type == "Cargo"
-       self.trains[:cargo].delete(train.number)
-     else
-       self.trains[:passanger].delete(train.number)
-     end
+     trains.delete(train)
      puts "Поезд №#{train.number} покинул станцию #{name}."
    end
 
  end
 
  class Route
-   attr_accessor :route
+   attr_accessor :stations
 
    def initialize(start, finish)
-     @route = [start, finish]
+     @stations = [start, finish]
    end
 
    def add(station)
-     self.route.insert(-2, station)
+     self.stations.insert(-2, station)
      puts "Станция #{station.name} добавлена в маршрут."
    end
 
    def delete(station)
-     if station == @route[0] || station == @route[-1]
+     if station == @stations[0] || station == @stations[-1]
        puts "Нельзя удалить статровую и/или финишную станцию маршрута."
      else
-       self.route.delete(station)
+       self.stations.delete(station)
        puts "Станция #{station.name} удалена из маршрут."
       end
-   end
-
-   def show_route
-     self.route.each {|station| puts "#{station.name}"}
    end
 
  end
@@ -108,35 +91,47 @@ class Station
    end
 
    def add_route(route)
-     self.route = route.route
-     self.current_station = self.route[0]
+     self.route = route
+     self.current_station = self.route.stations[0]
      self.current_station.add_train(self)
    end
 
-   def next_station
-     if self.current_station != self.route[-1]
+   def go_next_station
+     if self.current_station != self.route.stations[-1]
        self.current_station.departure(self)
-       self.current_station = self.route[self.route.index(self.current_station) + 1]
+       self.current_station = self.route.stations[self.route.stations.index(self.current_station) + 1]
        self.current_station.add_train(self)
      else
        puts "Это конечная станция."
      end
    end
 
-   def previous_station
-     if self.current_station != self.route[0]
+   def go_prev_station
+     if self.current_station != self.route.stations[0]
        self.current_station.departure(self)
-       self.current_station = self.route[self.route.index(self.current_station) - 1]
+       self.current_station = self.route.stations[self.route.stations.index(self.current_station) - 1]
        self.current_station.add_train(self)
      else
        puts "Это начальная станция."
      end
    end
 
-   def show_stations
-     puts "Текущая станция: #{@current_station.name}"
-     puts "Предыдущая станция: #{@route[@route.index(@current_station) - 1].name}" if @current_station != @route[0]
-     puts "Следующая станция: #{@route[@route.index(@current_station) + 1].name}" if @current_station != @route[-1]
-   end
+   def show_next_station
+        if self.current_station == self.route.stations[-1]
+         puts "Это последняя станция"
+       else
+         next_station = self.route.stations[self.route.stations.index(self.current_station) + 1]
+         puts "Следущая станция #{next_station.name}"
+       end
+     end
+
+     def show_prev_station
+       if self.current_station == self.route.stations[0]
+         puts "Это первая станция"
+       else
+         prev_station = self.route.stations[self.route.stations.index(self.current_station) - 1]
+         puts "Предыдущая станция #{prev_station.name}"
+       end
+     end
 
  end
