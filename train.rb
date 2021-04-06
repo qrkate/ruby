@@ -6,6 +6,8 @@ class Station
    def initialize(name)
      @name = name
      @trains = []
+     @cargo_trains = []
+     @passanger_trains = []
    end
 
    def add_train(train)
@@ -16,11 +18,13 @@ class Station
    def show_train_type
      self.trains.each do |train|
        if train.type == "Cargo"
-         puts "Грузовой поезд № #{train.number}"
+         @cargo_trains.push(train)
        else
-        puts "Пассажирский поезд № #{train.number}"
+        @passanger_trains.push(train)
        end
      end
+     puts "Грузовые поезда:", @cargo_trains
+     puts "Пассажирские поезда", @passanger_trains
    end
 
    def departure(train)
