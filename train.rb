@@ -47,7 +47,6 @@ class Train
     @type = type
     @van = van
     @speed = 0
-    @route = []
   end
 
   def go
